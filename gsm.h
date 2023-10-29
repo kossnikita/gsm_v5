@@ -33,9 +33,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "SEGGER_RTT.h"
 
 #if (_GSM_DEBUG == 1)
-#define gsm_printf(...)     printf(__VA_ARGS__)
+#define gsm_printf(...)     SEGGER_RTT_printf(0, __VA_ARGS__)
 #else
 #define gsm_printf(...)     {};
 #endif
