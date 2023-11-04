@@ -2,7 +2,7 @@
 
 gsm_t gsm;
 
-//###############################################################################################################
+// ###############################################################################################################
 void gsm_found(char *found_str)
 {
   char *str;
@@ -113,7 +113,7 @@ void gsm_found(char *found_str)
       if (len > sizeof(gsm.gprs.mqttTopic))
         len = sizeof(gsm.gprs.mqttTopic);
       if (len > 2)
-        len --;
+        len--;
       strncpy(gsm.gprs.mqttTopic, str, len);
       str = strtok(NULL, "\"");
       if (str == NULL)
@@ -125,11 +125,11 @@ void gsm_found(char *found_str)
       if (len > sizeof(gsm.gprs.mqttMessage))
         len = sizeof(gsm.gprs.mqttMessage);
       if (len > 2)
-        len --;
+        len--;
       strncpy(gsm.gprs.mqttMessage, str, len);
-      gsm.gprs.mqttData = 1;      
-      
-    }while (0);
+      gsm.gprs.mqttData = 1;
+
+    } while (0);
     return;
   }
 #endif
@@ -137,7 +137,7 @@ void gsm_found(char *found_str)
   str = strstr(found_str, "");
 #endif
 }
-//###############################################################################################################
+// ###############################################################################################################
 void gsm_init_commands(void)
 {
   gsm_command("AT&F0\r\n", 5000, NULL, 0, 1, "\r\nOK\r\n");
@@ -163,7 +163,7 @@ void gsm_init_commands(void)
 
 #endif
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_lock(uint32_t timeout_ms)
 {
   uint32_t start = HAL_GetTick();
@@ -178,12 +178,12 @@ bool gsm_lock(uint32_t timeout_ms)
   }
   return false;
 }
-//###############################################################################################################
+// ###############################################################################################################
 void gsm_unlock()
 {
   gsm.lock = 0;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_init(void)
 {
   if (gsm.inited == 1)
@@ -215,9 +215,9 @@ bool gsm_init(void)
     return false;
   if (atc_addSearch(&gsm.atc, "\r\n+CIPRXGET: 1\r\n") == false)
     return false;
-   if (atc_addSearch(&gsm.atc, "\r\n+SMSTATE: ") == false)
+  if (atc_addSearch(&gsm.atc, "\r\n+SMSTATE: ") == false)
     return false;
-   if (atc_addSearch(&gsm.atc, "\r\n+SMPUBLISH: ") == false)
+  if (atc_addSearch(&gsm.atc, "\r\n+SMPUBLISH: ") == false)
     return false;
 #endif
 #if (_GSM_BLUETOOTH == 1)
@@ -228,13 +228,13 @@ bool gsm_init(void)
   gsm.inited = 1;
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 void gsm_loop(void)
 {
   static uint32_t gsm_time_1s = 0;
   static uint32_t gsm_time_10s = 0;
   static uint32_t gsm_time_60s = 0;
-  static uint8_t gsm_time_10s_check_power = 0;  
+  static uint8_t gsm_time_10s_check_power = 0;
   atc_loop(&gsm.atc);
   char str1[64];
   char str2[16];
@@ -242,7 +242,7 @@ void gsm_loop(void)
   if (HAL_GetTick() - gsm_time_1s > 1000)
   {
     gsm_time_1s = HAL_GetTick();
-    
+
     gsm_time_10s_check_power++;
     if ((gsm.status.turnOn == 1) && (gsm.lock == 0) && (gsm_time_10s_check_power == 10))
     {
@@ -255,8 +255,8 @@ void gsm_loop(void)
       {
         gsm.status.power = 0;
         if (gsm_power(true))
-          gsm.error = 0;          
-      }      
+          gsm.error = 0;
+      }
     }
     if ((gsm.status.turnOff == 1) && (gsm_time_10s_check_power == 10))
     {
@@ -266,8 +266,8 @@ void gsm_loop(void)
       {
         gsm_power(false);
       }
-    }    
-    
+    }
+
 #if (_GSM_CALL == 1 || _GSM_MSG == 1 || _GSM_GPRS == 1)
     //  +++ simcard check
     if ((gsm.status.power == 1) && (gsm.status.simcardChecked == 0))
@@ -350,14 +350,14 @@ void gsm_loop(void)
         if (gsm_msg_read(gsm.msg.newMsg))
         {
           gsm_msg_delete(gsm.msg.newMsg);
-          gsm_callback_newMsg(gsm.msg.number, gsm.msg.time, (char*) gsm.buffer);
+          gsm_callback_newMsg(gsm.msg.number, gsm.msg.time, (char *)gsm.buffer);
         }
         gsm.msg.newMsg = -1;
       }
     }
 #endif
     //  --- msg check
-    
+
     //  +++ network check
 #if (_GSM_GPRS == 1)
     if (gsm.status.power == 1)
@@ -369,14 +369,14 @@ void gsm_loop(void)
       }
       if ((gsm.gprs.mqttConnected == 1) && (gsm.gprs.mqttConnectedLast == 0))
       {
-        gsm.gprs.mqttConnectedLast = 1;      
+        gsm.gprs.mqttConnectedLast = 1;
       }
       else if ((gsm.gprs.mqttConnected == 0) && (gsm.gprs.mqttConnectedLast == 1))
       {
         gsm.gprs.mqttConnectedLast = 0;
         gsm_callback_mqttDisconnect();
       }
-    }      
+    }
 #endif
     //  --- network check
   }
@@ -410,10 +410,10 @@ void gsm_loop(void)
           if (gsm_msg_read(i))
           {
             gsm_msg_delete(i);
-            gsm_callback_newMsg(gsm.msg.number, gsm.msg.time, (char*) gsm.buffer);
+            gsm_callback_newMsg(gsm.msg.number, gsm.msg.time, (char *)gsm.buffer);
           }
         }
-				gsm_msg_deleteAll();
+        gsm_msg_deleteAll();
         gsm_msg_updateStorage();
       }
     }
@@ -476,27 +476,25 @@ void gsm_loop(void)
       gsm_msg_updateStorage();
 #endif
     //  --- msg check
-
   }
   //  --- 60s timer  ######################
-
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_power(bool on_off)
 {
   gsm_printf("[GSM] power(%d) begin\r\n", on_off);
   uint8_t state = 0;
   if (on_off)
   {
-		if (gsm.status.power == 1)
-			return true;
+    if (gsm.status.power == 1)
+      return true;
     gsm.status.turnOn = 1;
-    gsm.status.turnOff = 0;  
+    gsm.status.turnOff = 0;
   }
   else
   {
     gsm.status.turnOn = 0;
-    gsm.status.turnOff = 1;    
+    gsm.status.turnOff = 1;
   }
   if (gsm_command("AT\r\n", 1000, NULL, 0, 1, "\r\nOK\r\n") == 1)
     state = 1;
@@ -506,7 +504,7 @@ bool gsm_power(bool on_off)
     if (on_off)
       gsm.status.turnOn = 1;
     else
-      gsm.status.turnOff = 1;    
+      gsm.status.turnOff = 1;
     gsm.status.power = 1;
     gsm_init_commands();
     gsm_printf("[GSM] power(%d) done\r\n", on_off);
@@ -518,7 +516,7 @@ bool gsm_power(bool on_off)
     if (on_off)
       gsm.status.turnOn = 1;
     else
-      gsm.status.turnOff = 1; 
+      gsm.status.turnOff = 1;
     HAL_GPIO_WritePin(_GSM_KEY_GPIO, _GSM_KEY_PIN, GPIO_PIN_RESET);
     gsm_delay(1500);
     HAL_GPIO_WritePin(_GSM_KEY_GPIO, _GSM_KEY_PIN, GPIO_PIN_SET);
@@ -564,12 +562,12 @@ bool gsm_power(bool on_off)
   gsm_printf("[GSM] power(%d) failed!\r\n", on_off);
   return false;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_registered(void)
 {
   return gsm.status.registerd;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_setDefault(void)
 {
   if (gsm_lock(10000) == false)
@@ -577,7 +575,7 @@ bool gsm_setDefault(void)
     gsm_printf("[GSM] default() failed!\r\n");
     return false;
   }
-  if (gsm_command("AT&F0\r\n", 5000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+  if (gsm_command("AT&F0\r\n", 5000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] default() done\r\n");
     gsm_unlock();
@@ -587,7 +585,7 @@ bool gsm_setDefault(void)
   gsm_unlock();
   return false;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_saveProfile(void)
 {
   if (gsm_lock(10000) == false)
@@ -595,7 +593,7 @@ bool gsm_saveProfile(void)
     gsm_printf("[GSM] getIMEI() failed!\r\n");
     return false;
   }
-  if (gsm_command("AT&W\r\n", 5000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+  if (gsm_command("AT&W\r\n", 5000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] getIMEI() done\r\n");
     gsm_unlock();
@@ -605,7 +603,7 @@ bool gsm_saveProfile(void)
   gsm_unlock();
   return false;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_enterPinPuk(const char *string)
 {
   char str[32];
@@ -620,7 +618,7 @@ bool gsm_enterPinPuk(const char *string)
     return false;
   }
   sprintf(str, "AT+CPIN=%s\r\n", string);
-  if (gsm_command(str, 5000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+  if (gsm_command(str, 5000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] enterPinPuk() failed!\r\n");
     gsm_unlock();
@@ -630,7 +628,7 @@ bool gsm_enterPinPuk(const char *string)
   gsm_unlock();
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_getIMEI(char *string, uint8_t sizeOfString)
 {
   if ((string == NULL) || (sizeOfString < 15))
@@ -644,7 +642,7 @@ bool gsm_getIMEI(char *string, uint8_t sizeOfString)
     gsm_printf("[GSM] getIMEI() failed!\r\n");
     return false;
   }
-  if (gsm_command("AT+GSN\r\n", 1000 , str, sizeof(str), 2, "AT+GSN", "\r\nERROR\r\n") != 1)
+  if (gsm_command("AT+GSN\r\n", 1000, str, sizeof(str), 2, "AT+GSN", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] getIMEI() failed!\r\n");
     gsm_unlock();
@@ -660,7 +658,7 @@ bool gsm_getIMEI(char *string, uint8_t sizeOfString)
   gsm_unlock();
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_getVersion(char *string, uint8_t sizeOfString)
 {
   if (string == NULL)
@@ -675,7 +673,7 @@ bool gsm_getVersion(char *string, uint8_t sizeOfString)
   }
   char str1[16 + sizeOfString];
   char str2[sizeOfString + 1];
-  if (gsm_command("AT+CGMR\r\n", 1000 , str1, sizeof(str1), 2, "AT+GMM", "\r\nERROR\r\n") != 1)
+  if (gsm_command("AT+CGMR\r\n", 1000, str1, sizeof(str1), 2, "AT+GMM", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] getVersion() failed!\r\n");
     gsm_unlock();
@@ -692,7 +690,7 @@ bool gsm_getVersion(char *string, uint8_t sizeOfString)
   gsm_unlock();
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_getModel(char *string, uint8_t sizeOfString)
 {
   if (string == NULL)
@@ -707,7 +705,7 @@ bool gsm_getModel(char *string, uint8_t sizeOfString)
   }
   char str1[16 + sizeOfString];
   char str2[sizeOfString + 1];
-  if (gsm_command("AT+GMM\r\n", 1000 , str1, sizeof(str1), 2, "AT+GMM", "\r\nERROR\r\n") != 1)
+  if (gsm_command("AT+GMM\r\n", 1000, str1, sizeof(str1), 2, "AT+GMM", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] getModel() failed!\r\n");
     gsm_unlock();
@@ -724,7 +722,7 @@ bool gsm_getModel(char *string, uint8_t sizeOfString)
   gsm_unlock();
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_getServiceProviderName(char *string, uint8_t sizeOfString)
 {
   if (string == NULL)
@@ -739,7 +737,7 @@ bool gsm_getServiceProviderName(char *string, uint8_t sizeOfString)
   }
   char str1[16 + sizeOfString];
   char str2[sizeOfString + 1];
-  if (gsm_command("AT+CSPN?\r\n", 1000 , str1, sizeof(str1), 2, "\r\n+CSPN:", "\r\nERROR\r\n") != 1)
+  if (gsm_command("AT+CSPN?\r\n", 1000, str1, sizeof(str1), 2, "\r\n+CSPN:", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] getServiceProviderName() failed!\r\n");
     gsm_unlock();
@@ -756,7 +754,7 @@ bool gsm_getServiceProviderName(char *string, uint8_t sizeOfString)
   gsm_unlock();
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 uint8_t gsm_getSignalQuality_0_to_100(void)
 {
   if (gsm_lock(10000) == false)
@@ -786,7 +784,7 @@ uint8_t gsm_getSignalQuality_0_to_100(void)
   gsm_unlock();
   return gsm.signal;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_waitForRegister(uint8_t waitSecond)
 {
   gsm_printf("[GSM] waitForRegister(%d second) begin\r\n", waitSecond);
@@ -811,7 +809,7 @@ bool gsm_waitForRegister(uint8_t waitSecond)
   gsm_printf("[GSM] waitForRegister() failed!\r\n");
   return false;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_tonePlay(gsm_tone_t gsm_tone_, uint32_t durationMiliSecond, uint8_t level_0_100)
 {
   if (gsm_lock(10000) == false)
@@ -821,14 +819,14 @@ bool gsm_tonePlay(gsm_tone_t gsm_tone_, uint32_t durationMiliSecond, uint8_t lev
   }
   char str[32];
   sprintf(str, "AT+SNDLEVEL=0,%d\r\n", level_0_100);
-  if (gsm_command(str, 5000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+  if (gsm_command(str, 5000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] tonePlay() failed!\r\n");
     gsm_unlock();
     return false;
   }
-  sprintf(str, "AT+STTONE=1,%d,%d\r\n", gsm_tone_, (int) durationMiliSecond);
-  if (gsm_command(str, 5000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+  sprintf(str, "AT+STTONE=1,%d,%d\r\n", gsm_tone_, (int)durationMiliSecond);
+  if (gsm_command(str, 5000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] tonePlay() failed!\r\n");
     gsm_unlock();
@@ -838,7 +836,7 @@ bool gsm_tonePlay(gsm_tone_t gsm_tone_, uint32_t durationMiliSecond, uint8_t lev
   gsm_unlock();
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_toneStop(void)
 {
   if (gsm_lock(10000) == false)
@@ -846,7 +844,7 @@ bool gsm_toneStop(void)
     gsm_printf("[GSM] toneStop() failed!\r\n");
     return false;
   }
-  if (gsm_command("AT+STTONE=0\r\n", 5000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+  if (gsm_command("AT+STTONE=0\r\n", 5000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] toneStop() done\r\n");
     gsm_unlock();
@@ -856,7 +854,7 @@ bool gsm_toneStop(void)
   gsm_unlock();
   return false;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_dtmf(char *string, uint32_t durationMiliSecond)
 {
   if (gsm_lock(10000) == false)
@@ -865,8 +863,8 @@ bool gsm_dtmf(char *string, uint32_t durationMiliSecond)
     return false;
   }
   char str[32];
-  sprintf(str, "AT+VTS=\"%s\",%d\r\n", string, (int) (durationMiliSecond / 100));
-  if (gsm_command(str, 5000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+  sprintf(str, "AT+VTS=\"%s\",%d\r\n", string, (int)(durationMiliSecond / 100));
+  if (gsm_command(str, 5000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
   {
     gsm_printf("[GSM] dtmf() failed!\r\n");
     gsm_unlock();
@@ -876,7 +874,7 @@ bool gsm_dtmf(char *string, uint32_t durationMiliSecond)
   gsm_unlock();
   return true;
 }
-//###############################################################################################################
+// ###############################################################################################################
 bool gsm_ussd(char *command, char *answer, uint16_t sizeOfAnswer, uint8_t waitSecond)
 {
   gsm_printf("[GSM] ussd() begin\r\n");
@@ -887,7 +885,7 @@ bool gsm_ussd(char *command, char *answer, uint16_t sizeOfAnswer, uint8_t waitSe
   }
   if (command == NULL)
   {
-    if (gsm_command("AT+CUSD=2\r\n", 1000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+    if (gsm_command("AT+CUSD=2\r\n", 1000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
     {
       gsm_printf("[GSM] ussd() failed!\r\n");
       gsm_unlock();
@@ -901,7 +899,7 @@ bool gsm_ussd(char *command, char *answer, uint16_t sizeOfAnswer, uint8_t waitSe
   {
     char str[16 + strlen(command)];
     sprintf(str, "AT+CUSD=0,\"%s\"\r\n", command);
-    if (gsm_command(str, waitSecond * 1000 , NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
+    if (gsm_command(str, waitSecond * 1000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n") != 1)
     {
       gsm_printf("[GSM] ussd() failed!\r\n");
       gsm_unlock();
@@ -916,8 +914,8 @@ bool gsm_ussd(char *command, char *answer, uint16_t sizeOfAnswer, uint8_t waitSe
     memset(answer, 0, sizeOfAnswer);
     char str[16 + strlen(command)];
     sprintf(str, "AT+CUSD=1,\"%s\"\r\n", command);
-    if (gsm_command(str, waitSecond * 1000, (char* )gsm.buffer, sizeof(gsm.buffer), 2, "\r\n+CUSD:", "\r\nERROR\r\n")
-        != 1)
+    if (gsm_command(str, waitSecond * 1000, (char *)gsm.buffer, sizeof(gsm.buffer), 2, "\r\n+CUSD:", "\r\nERROR\r\n") !=
+        1)
     {
       gsm_command("AT+CUSD=2\r\n", 1000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n");
       gsm_printf("[GSM] ussd() failed!\r\n");
@@ -925,7 +923,7 @@ bool gsm_ussd(char *command, char *answer, uint16_t sizeOfAnswer, uint8_t waitSe
       return false;
     }
     gsm_command("AT+CUSD=2\r\n", 1000, NULL, 0, 2, "\r\nOK\r\n", "\r\nERROR\r\n");
-    char *start = strstr((char*) gsm.buffer, "\"");
+    char *start = strstr((char *)gsm.buffer, "\"");
     if (start != NULL)
     {
       char *end = strstr(start, "\", ");
@@ -952,5 +950,4 @@ bool gsm_ussd(char *command, char *answer, uint16_t sizeOfAnswer, uint8_t waitSe
     }
   }
 }
-//###############################################################################################################
-
+// ###############################################################################################################
